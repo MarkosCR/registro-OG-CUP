@@ -279,10 +279,50 @@
     <button type="submit">Registrar</button>
   </form>
 
-  <p id="mensaje"></p>
+  <p id="mensaje">
+  ⚠️ El formulario se habilitará el <strong>28 de Julio a las 11:40 AM</strong>.<br>
+  Tiempo restante: <strong><span id="contador">--:--:--</span></strong>
+</p>
 
   
   <script>
+  
+  //carga del formulario en tiempo definido
+		 const fechaInicio = new Date("2025-07-28T11:40:00-06:00"); // Fecha y hora de apertura
+
+		function controlarFormulario() {
+		  const ahora = new Date();
+		  const form = document.getElementById("registroForm");
+		  const mensaje = document.getElementById("mensaje");
+		  const contador = document.getElementById("contador");
+
+		  if (ahora < fechaInicio) {
+			const tiempoRestante = fechaInicio - ahora;
+
+			const horas = Math.floor(tiempoRestante / (1000 * 60 * 60));
+			const minutos = Math.floor((tiempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+			const segundos = Math.floor((tiempoRestante % (1000 * 60)) / 1000);
+
+			// Mostrar con formato 2 dígitos
+			contador.textContent = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+
+			form.style.display = "none";
+			mensaje.className = "mensaje-error";
+			mensaje.style.display = "block";
+		  } else {
+			form.style.display = "block";
+			mensaje.style.display = "none";
+		  }
+		}
+
+		window.addEventListener("load", () => {
+		  controlarFormulario();
+		  setInterval(controlarFormulario, 1000); // Actualiza cada segundo
+		});
+
+  
+  //fin carga del formulario en tiempo definido
+  
     const SUPABASE_URL = 'https://irmomhkjlvexpkhewloy.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlybW9taGtqbHZleHBraGV3bG95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMzI2MDMsImV4cCI6MjA2ODgwODYwM30._nkkpO-hyRoxFbQf700-AeARSESyymS-6rSuT5usaaU';
 
