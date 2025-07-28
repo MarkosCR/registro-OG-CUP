@@ -288,37 +288,43 @@
   <script>
   
   //carga del formulario en tiempo definido
-		 const fechaInicio = new Date("2025-07-28T11:40:00-06:00"); // Fecha y hora de apertura
+		 const fechaInicio = new Date("2025-07-28T14:45:00-06:00");
 
-		function controlarFormulario() {
-		  const ahora = new Date();
-		  const form = document.getElementById("registroForm");
-		  const mensaje = document.getElementById("mensaje");
-		  const contador = document.getElementById("contador");
+  function controlarFormulario() {
+    const ahora = new Date();
+    const form = document.getElementById("registroForm");
+    const mensaje = document.getElementById("mensaje");
+    const contador = document.getElementById("contador");
 
-		  if (ahora < fechaInicio) {
-			const tiempoRestante = fechaInicio - ahora;
+    if (ahora < fechaInicio) {
+      const tiempoRestante = fechaInicio - ahora;
 
-			const horas = Math.floor(tiempoRestante / (1000 * 60 * 60));
-			const minutos = Math.floor((tiempoRestante % (1000 * 60 * 60)) / (1000 * 60));
-			const segundos = Math.floor((tiempoRestante % (1000 * 60)) / 1000);
+      const horas = Math.floor(tiempoRestante / (1000 * 60 * 60));
+      const minutos = Math.floor((tiempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+      const segundos = Math.floor((tiempoRestante % (1000 * 60)) / 1000);
 
-			// Mostrar con formato 2 dígitos
-			contador.textContent = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+      contador.textContent = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
 
-			form.style.display = "none";
-			mensaje.className = "mensaje-error";
-			mensaje.style.display = "block";
-		  } else {
-			form.style.display = "block";
-			mensaje.style.display = "none";
-		  }
-		}
+      form.style.display = "none";
+      mensaje.className = "mensaje-error";
+      mensaje.style.display = "block";
 
-		window.addEventListener("load", () => {
-		  controlarFormulario();
-		  setInterval(controlarFormulario, 1000); // Actualiza cada segundo
-		});
+      return true; // aún no ha llegado la hora
+    } else {
+      form.style.display = "block";
+      mensaje.style.display = "none";
+      return false; // ya es hora, detener intervalo
+    }
+  }
+
+  window.addEventListener("load", () => {
+    const intervalo = setInterval(() => {
+      const seguir = controlarFormulario();
+      if (!seguir) {
+        clearInterval(intervalo); // Detener actualización
+      }
+    }, 1000);
+  });
 
   
   //fin carga del formulario en tiempo definido
@@ -441,7 +447,7 @@
 
       if (error) {
         console.error('❌ Error al registrar:', error.message);
-        mostrarMensaje('Error al registrar. Intenta de nuevo.', false);
+        mostrarMensaje('❌ Usuario ya esta registrado, ID de Pokémon ya existe.', false);
       } else {
 	 
 	 // Enviar correo con EmailJS
