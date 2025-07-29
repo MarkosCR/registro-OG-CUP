@@ -422,16 +422,7 @@
         return;
       }
 
-      const { data: existeCelular } = await supabaseClient
-        .from('registros')
-        .select('id')
-        .eq('celular', celular)
-        .maybeSingle();
-
-      if (existeCelular) {
-        mostrarMensaje('Este número de celular ya fue registrado.', false);
-        return;
-      }
+      
 
       let codigo_registro = '';
       try {
