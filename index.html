@@ -347,7 +347,7 @@ window.addEventListener("load", () => {
 
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const MAX_CUPOS = 15;
+    const MAX_CUPOS = 7;
 
     async function actualizarCupos() {
       const { count, error } = await supabaseClient
