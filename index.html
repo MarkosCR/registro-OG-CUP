@@ -290,41 +290,54 @@
   //carga del formulario en tiempo definido
 		 const fechaInicio = new Date("2025-07-28T14:45:00-06:00");
 
-  function controlarFormulario() {
-    const ahora = new Date();
-    const form = document.getElementById("registroForm");
-    const mensaje = document.getElementById("mensaje");
-    const contador = document.getElementById("contador");
+async function controlarFormulario() {
+  const ahora = new Date();
+  const form = document.getElementById("registroForm");
+  const mensaje = document.getElementById("mensaje");
+  const contador = document.getElementById("contador");
 
-    if (ahora < fechaInicio) {
-      const tiempoRestante = fechaInicio - ahora;
+  if (ahora < fechaInicio) {
+    const tiempoRestante = fechaInicio - ahora;
 
-      const horas = Math.floor(tiempoRestante / (1000 * 60 * 60));
-      const minutos = Math.floor((tiempoRestante % (1000 * 60 * 60)) / (1000 * 60));
-      const segundos = Math.floor((tiempoRestante % (1000 * 60)) / 1000);
+    const horas = Math.floor(tiempoRestante / (1000 * 60 * 60));
+    const minutos = Math.floor((tiempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+    const segundos = Math.floor((tiempoRestante % (1000 * 60)) / 1000);
 
-      contador.textContent = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+    contador.textContent = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
 
+    form.style.display = "none";
+    mensaje.className = "mensaje-error";
+    mensaje.style.display = "block";
+
+    return true; // aún no ha llegado la hora
+  } else {
+    // ✅ Verificar si hay cupos antes de mostrar el formulario
+    const cuposDisponibles = await actualizarCupos();
+    if (cuposDisponibles <= 0) {
       form.style.display = "none";
       mensaje.className = "mensaje-error";
+      mensaje.textContent = "⚠️ El formulario ya no está disponible. ¡Cupos llenos!";
       mensaje.style.display = "block";
-
-      return true; // aún no ha llegado la hora
-    } else {
-      form.style.display = "block";
-      mensaje.style.display = "none";
-      return false; // ya es hora, detener intervalo
+      return false;
     }
-  }
 
-  window.addEventListener("load", () => {
-    const intervalo = setInterval(() => {
-      const seguir = controlarFormulario();
-      if (!seguir) {
-        clearInterval(intervalo); // Detener actualización
-      }
-    }, 1000);
-  });
+    form.style.display = "block";
+    mensaje.style.display = "none";
+    return false; // ya es hora y hay cupos
+  }
+}
+
+
+
+window.addEventListener("load", () => {
+  const intervalo = setInterval(async () => {
+    const seguir = await controlarFormulario();
+    if (!seguir) {
+      clearInterval(intervalo); // Detener actualización
+    }
+  }, 1000);
+});
+
 
   
   //fin carga del formulario en tiempo definido
@@ -334,7 +347,7 @@
 
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const MAX_CUPOS = 4;
+    const MAX_CUPOS = 5;
 
     async function actualizarCupos() {
       const { count, error } = await supabaseClient
@@ -348,7 +361,7 @@
 
       if (cuposRestantes <= 0) {
         document.getElementById('registroForm').style.display = 'none';
-        mostrarMensaje('¡Los cupos están llenos!', false);
+        mostrarMensaje('⚠️ El formulario ya no está disponible. ¡Cupos llenos!', false);
       }
 
       return cuposRestantes;
@@ -385,7 +398,7 @@
       mensaje.style.display = 'block';
     }
 
-    actualizarCupos();
+   actualizarCupos();
 
     document.getElementById('registroForm').addEventListener('submit', async (e) => {
       e.preventDefault();
