@@ -334,7 +334,7 @@
 
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const MAX_CUPOS = 32;
+    const MAX_CUPOS = 4;
 
     async function actualizarCupos() {
       const { count, error } = await supabaseClient
