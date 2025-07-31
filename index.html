@@ -2,365 +2,489 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Panel Admin - OG CUP</title>
+  <title>Registro Pokémon - Olympus Garden CUP Agosto 2025</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <style>
+    /* Reset básico */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
+      padding: 0;
       font-family: 'Roboto', sans-serif;
-      background: #f5f7fa;
-      padding: 2rem;
-      color: #2c3e50;
-    }
-
-    h2 {
-      color: #34495e;
-      margin-bottom: 1rem;
-      font-weight: 700;
-    }
-
-    #filtro-codigo {
-      margin-bottom: 1rem;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      width: 300px;
-      border: 1.5px solid #5dade2;
-      border-radius: 5px;
-      transition: border-color 0.3s ease;
-    }
-
-    #filtro-codigo:focus {
-      outline: none;
-      border-color: #2e86c1;
-      box-shadow: 0 0 5px rgba(46, 134, 193, 0.5);
-    }
-
-    .table-container {
-      overflow-x: auto;
-      border-radius: 8px;
-      box-shadow: 0 6px 15px rgba(50, 50, 93, 0.1);
-      background: white;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 700px;
-    }
-
-    th, td {
-      padding: 0.85rem 1rem;
-      border-bottom: 1px solid #dce3e8;
-      text-align: left;
-      font-size: 0.95rem;
-      color: #34495e;
-    }
-
-    th {
-      background-color: #2c3e50;
-      color: #ecf0f1;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-
-    tr:nth-child(even) {
-      background-color: #ecf0f1;
-    }
-
-    tr:hover {
-      background-color: #d6e9f8;
-      cursor: default;
-    }
-
-    #contador-registros {
-      margin-bottom: 1rem;
-      font-weight: 600;
-      color: #34495e;
-    }
-
-    .cargando {
-      color: #7f8c8d;
-      font-style: italic;
-    }
-
-    #paginacion {
-      margin-top: 1rem;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      min-height: 100vh;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      gap: 1rem;
-      font-weight: 600;
-      color: #34495e;
+      justify-content: flex-start;
+      padding: 2rem 1rem;
+      color: #f0f4f8;
+      overflow-x: hidden;
+      position: relative;
     }
 
-    #paginacion button {
-      background-color: #5dade2;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 0.4rem 0.9rem;
-      cursor: pointer;
+    /* Fondo animado con Pokémon */
+    .pokemon-bg {
+      pointer-events: none; /* no interfiera con clicks */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .pokemon-bg img {
+      position: absolute;
+      opacity: 0.15;
+      user-select: none;
+      animation-timing-function: ease-in-out;
+      /* Quité left fijo para asignarlo dinámicamente */
+    }
+    /* Mantengo solo top y width, left se seteará dinámicamente */
+	.poke1 { width: 100px; top: 5%; }
+	.poke2 { width: 90px; top: 15%; }
+	.poke3 { width: 110px; top: 30%; }
+	.poke4 { width: 95px; top: 40%; }
+	.poke5 { width: 105px; top: 50%; }
+	.poke6 { width: 90px; top: 60%; }
+	.poke7 { width: 100px; top: 70%; }
+	.poke8 { width: 85px; top: 80%; }
+	.poke9 { width: 95px; top: 85%; }
+	.poke10 { width: 90px; top: 95%; }
+	.poke11 { width: 100px; top: 75%; }
+	.poke12 { width: 100px; top: 22%; }
+
+    /* Contenido encima del fondo */
+    h2#titulo-principal {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      text-align: center;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+      position: relative;
+      z-index: 10;
+    }
+
+    #cupos-restantes {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 0 0 2rem 0;
+      text-align: center;
+      color: #ffd166;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+      position: relative;
+      z-index: 10;
+    }
+
+    form {
+      background-color: #ffffffdd;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      padding: 2rem 2.5rem;
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+      color: #1a1a1a;
+      transition: box-shadow 0.3s ease;
+      position: relative;
+      z-index: 10;
+    }
+
+    form:hover {
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    }
+
+    /* Contenedor para input + icono */
+    .input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Íconos SVG */
+    .input-group svg {
+      position: absolute;
+      left: 14px;
+      width: 20px;
+      height: 20px;
+      fill: #0077ff;
+      pointer-events: none;
+      opacity: 0.75;
+      transition: fill 0.3s ease, transform 0.3s ease;
+    }
+    /* Icono activo al foco */
+    input[type="text"]:focus + svg,
+    input[type="text"]:focus ~ svg,
+    .input-group:focus-within svg {
+      fill: #004fcc;
+      transform: scale(1.2);
+      opacity: 1;
+    }
+
+    /* Inputs con padding para icono */
+    input[type="text"] {
+      padding: 14px 16px 14px 44px; /* espacio para icono a la izquierda */
       font-size: 1rem;
-      transition: background-color 0.3s ease;
+      border: 2px solid #bbb;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      font-weight: 500;
+      width: 100%;
     }
 
-    #paginacion button:disabled {
-      background-color: #b0cde8;
-      cursor: not-allowed;
+    input[type="text"]:focus {
+      border-color: #0077ff;
+      box-shadow: 0 0 8px #0077ffaa;
+      background-color: #f0f8ff;
     }
 
-    #paginacion button:hover:not(:disabled) {
-      background-color: #2e86c1;
+    button {
+      padding: 14px 20px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(45deg, #0077ff, #005bb5);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0, 87, 255, 0.5);
+      transition: background 0.4s ease, box-shadow 0.3s ease;
+      width: 100%;
     }
 
-    @media (max-width: 640px) {
-      body {
-        padding: 1rem;
+    button:hover {
+      background: linear-gradient(45deg, #005bb5, #003f7f);
+      box-shadow: 0 8px 20px rgba(0, 67, 192, 0.7);
+    }
+
+    #mensaje {
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+      text-align: center;
+      border-radius: 10px;
+      padding: 12px 15px;
+      max-width: 420px;
+      word-wrap: break-word;
+      display: none;
+      position: relative;
+      z-index: 10;
+    }
+
+    .mensaje-error {
+      background-color: #ffeded;
+      color: #d32f2f;
+      border: 1.5px solid #f44336;
+      box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+    }
+
+    .mensaje-exito {
+      background-color: #e6f4ea;
+      color: #2e7d32;
+      border: 1.5px solid #388e3c;
+      box-shadow: 0 2px 8px rgba(56, 142, 60, 0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      h2#titulo-principal {
+        font-size: 1.8rem;
       }
-
-      #filtro-codigo {
-        width: 100%;
+      #cupos-restantes {
+        font-size: 1.6rem;
+      }
+      form {
+        padding: 1.5rem 1.5rem;
+      }
+      input[type="text"], button {
         font-size: 1rem;
+        padding: 12px 14px 12px 42px;
       }
-
-      h2 {
-        font-size: 1.4rem;
+      .input-group svg {
+        left: 12px;
+        width: 18px;
+        height: 18px;
       }
-
-      table {
-        min-width: 600px;
-        font-size: 0.9rem;
-      }
-
-      #paginacion {
-        flex-wrap: wrap;
-        gap: 0.5rem;
-      }
-
-      #paginacion button {
-        padding: 0.4rem 0.7rem;
-        font-size: 0.9rem;
-      }
-    }
-
-    .estado-select {
-      padding: 4px 6px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      background: #fdfdfd;
-      font-size: 0.95rem;
     }
   </style>
+    <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    emailjs.init("UJTj2WUAu8BBBmz7d"); // ← Tu User ID de EmailJS
+  </script>
 </head>
 <body>
+
+  <!-- Fondo con Pokémon estáticos, pero left aleatorio -->
+  <div class="pokemon-bg" aria-hidden="true">
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png" alt="" class="poke1" />
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/2.png" alt="" class="poke2" />
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/3.png" alt="" class="poke3" />
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png" alt="" class="poke4" />
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/5.png" alt="" class="poke5" />
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png" alt="" class="poke6" />
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/7.png" alt="" class="poke7" />
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/8.png" alt="" class="poke8" />
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/9.png" alt="" class="poke9" />
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/447.png" alt="" class="poke10" />
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/448.png" alt="" class="poke11" />
+	<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" alt="" class="poke12" />
+  </div>
+
   <h2 id="titulo-principal">
     <img src="OGimagen.png" alt="Icono" style="height: 100px; vertical-align: middle; margin-right: 10px;" />
-    Panel de Administración - Olympus Garden CUP
-    <img src="OGimagen.png" alt="Icono" style="height: 100px; vertical-align: middle; margin-right: 10px;" />
+    Registro de Participantes - Olympus Garden CUP Agosto 2025
   </h2>
 
-  <input type="text" id="filtro-codigo" placeholder="Filtrar por Código de Registro" title="Escribe aquí para filtrar por código de registro" />
+  <div id="cupos-restantes">Verificando cupos disponibles...</div>
 
-  <button id="btn-eliminar-cancelados" style="float: right; background-color: #e74c3c; color: white; 1rem;  padding: 0.5rem 1rem; border: none; border-radius: 5px; cursor: pointer;" style="margin-bottom: 1rem;  padding: 0.5rem 1rem; border: none; border-radius: 5px; cursor: pointer;">
-    🗑️ Eliminar Cancelados
-  </button>
+  <form id="registroForm" novalidate>
+    <div class="input-group">
+      <input type="text" placeholder="Nombre" name="nombre" required autocomplete="name" />
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    </div>
 
-  <p id="contador-registros" class="cargando">Cargando registros...</p>
+    <div class="input-group">
+      <input type="text" placeholder="Apellido" name="apellido" required autocomplete="family-name" />
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+    </div>
 
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>Celular</th>
-          <th>ID Pokémon</th>
-          <th>Correo</th>
-          <th>Código de Registro</th>
-          <th>Fecha</th>
-          <th>Estado</th>
-        </tr>
-      </thead>
-      <tbody id="tabla-registros"></tbody>
-    </table>
-  </div>
+    <div class="input-group">
+      <input type="text" placeholder="Celular (8 dígitos)" name="celular" pattern="\d{8}" title="Debe tener 8 dígitos" required autocomplete="tel" />
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.464 15.464 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.27 11.72 11.72 0 003.7.59 1 1 0 011 1v3.5a1 1 0 01-1 1A17.93 17.93 0 014 6a1 1 0 011-1h3.5a1 1 0 011 1 11.72 11.72 0 00.59 3.7 1 1 0 01-.27 1.11l-2.2 2.2z"/></svg>
+    </div>
 
-  <div id="paginacion">
-    <button id="btn-prev" disabled>◀ Anterior</button>
-    <span id="pagina-info">Página 1 de 1</span>
-    <button id="btn-next" disabled>Siguiente ▶</button>
-  </div>
+    <div class="input-group">
+      <input type="text" placeholder="ID de Pokémon (Trainer Club)" name="pokemon_id" required autocomplete="off" />
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 018 8 7.978 7.978 0 01-4.09 6.97l-3.91 2.32a1 1 0 01-1.01 0l-3.91-2.32A7.978 7.978 0 014 12a8 8 0 018-8zm0 2a6 6 0 100 12 6 6 0 000-12z"/></svg>
+    </div>
+	
+	<div class="input-group">
+	<input type="text" placeholder="Correo electrónico" name="email_to" required autocomplete="email" />
+	  <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+		<path d="M2 4a2 2 0 012-2h16a2 2 0 012 2v1l-10 7L2 5V4zm0 3.236l9.447 6.613a1 1 0 001.106 0L22 7.236V20a2 2 0 01-2 2H4a2 2 0 01-2-2V7.236z"/>
+	  </svg>
+	</div>
+  
+    <button type="submit">Registrar</button>
+  </form>
 
+  <p id="mensaje">
+  ⚠️ El formulario se habilitará el <strong>28 de Julio a las 11:40 AM</strong>.<br>
+  Tiempo restante: <strong><span id="contador">--:--:--</span></strong>
+</p>
+
+  
   <script>
+  
+  //carga del formulario en tiempo definido
+		 const fechaInicio = new Date("2025-07-28T14:45:00-06:00");
+
+  function controlarFormulario() {
+    const ahora = new Date();
+    const form = document.getElementById("registroForm");
+    const mensaje = document.getElementById("mensaje");
+    const contador = document.getElementById("contador");
+
+    if (ahora < fechaInicio) {
+      const tiempoRestante = fechaInicio - ahora;
+
+      const horas = Math.floor(tiempoRestante / (1000 * 60 * 60));
+      const minutos = Math.floor((tiempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+      const segundos = Math.floor((tiempoRestante % (1000 * 60)) / 1000);
+
+      contador.textContent = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+
+      form.style.display = "none";
+      mensaje.className = "mensaje-error";
+      mensaje.style.display = "block";
+
+      return true; // aún no ha llegado la hora
+    } else {
+      form.style.display = "block";
+      mensaje.style.display = "none";
+      return false; // ya es hora, detener intervalo
+    }
+  }
+
+  window.addEventListener("load", () => {
+    const intervalo = setInterval(() => {
+      const seguir = controlarFormulario();
+      if (!seguir) {
+        clearInterval(intervalo); // Detener actualización
+      }
+    }, 1000);
+  });
+
+  
+  //fin carga del formulario en tiempo definido
+  
     const SUPABASE_URL = 'https://irmomhkjlvexpkhewloy.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlybW9taGtqbHZleHBraGV3bG95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMzI2MDMsImV4cCI6MjA2ODgwODYwM30._nkkpO-hyRoxFbQf700-AeARSESyymS-6rSuT5usaaU';
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const contador = document.getElementById('contador-registros');
-    const tabla = document.getElementById('tabla-registros');
-    const filtroInput = document.getElementById('filtro-codigo');
-    const btnPrev = document.getElementById('btn-prev');
-    const btnNext = document.getElementById('btn-next');
-    const paginaInfo = document.getElementById('pagina-info');
-    const btnEliminarCancelados = document.getElementById("btn-eliminar-cancelados");
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const MAX_CUPOS = 32;
 
-    btnEliminarCancelados.addEventListener("click", async () => {
-      const confirmar = confirm("⚠️ ¿Estás seguro de eliminar TODOS los registros con estado 'Cancelado'?\nEsta acción no se puede deshacer.");
-      if (!confirmar) return;
+    async function actualizarCupos() {
+      const { count, error } = await supabaseClient
+        .from('registros')
+        .select('*', { count: 'exact', head: true });
 
-      const { error } = await supabaseClient.from("registros").delete().eq("aprobado", "Cancelado");
+      const cuposRestantes = MAX_CUPOS - (count ?? 0);
+
+      const cuposElem = document.getElementById('cupos-restantes');
+      cuposElem.textContent = error ? '❌ Error al obtener los cupos.' : `Cupos disponibles: ${cuposRestantes}`;
+
+      if (cuposRestantes <= 0) {
+        document.getElementById('registroForm').style.display = 'none';
+        mostrarMensaje('¡Los cupos están llenos!', false);
+      }
+
+      return cuposRestantes;
+    }
+
+    async function generarCodigoRegistroUnico() {
+      const fecha = new Date();
+      const mmddyyyy = `${(fecha.getMonth() + 1).toString().padStart(2, '0')}${fecha.getDate().toString().padStart(2, '0')}${fecha.getFullYear()}`;
+      let intento = 0;
+      let codigo_registro = '';
+
+      while (intento < 100) {
+        const aleatorio = Math.floor(Math.random() * 99 + 1).toString().padStart(2, '0');
+        codigo_registro = `OG${mmddyyyy}-${aleatorio}`;
+
+        const { data } = await supabaseClient
+          .from('registros')
+          .select('id')
+          .eq('codigo_registro', codigo_registro)
+          .maybeSingle();
+
+        if (!data) return codigo_registro;
+
+        intento++;
+      }
+
+      throw new Error('No se pudo generar un código de registro único.');
+    }
+
+    function mostrarMensaje(texto, esExito = true) {
+      const mensaje = document.getElementById('mensaje');
+      mensaje.textContent = texto;
+      mensaje.className = esExito ? 'mensaje-exito' : 'mensaje-error';
+      mensaje.style.display = 'block';
+    }
+
+    actualizarCupos();
+
+    document.getElementById('registroForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const cuposDisponibles = await actualizarCupos();
+      if (cuposDisponibles <= 0) return;
+
+      const form = e.target;
+      const nombre = form.nombre.value.trim();
+      const apellido = form.apellido.value.trim();
+      const celular = form.celular.value.trim();
+      const pokemon_id = form.pokemon_id.value.trim();
+      const email = form.email_to.value.trim();	
+	  
+      if (!/^\d{8}$/.test(celular)) {
+        mostrarMensaje('El celular debe tener exactamente 8 dígitos.', false);
+        return;
+      }
+	  
+	  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+	  mostrarMensaje('El correo electrónico no es válido.', false);
+	  return;
+	}
+	
+
+      const { data: existeID } = await supabaseClient
+        .from('registros')
+        .select('id')
+        .eq('pokemon_id', pokemon_id)
+        .maybeSingle();
+
+      if (existeID) {
+        mostrarMensaje('Este ID de Pokémon ya está registrado.', false);
+        return;
+      }
+
+      
+
+      let codigo_registro = '';
+      try {
+        codigo_registro = await generarCodigoRegistroUnico();
+      } catch (error) {
+        mostrarMensaje('Error generando código de registro.', false);
+        return;
+      }
+
+      const { error } = await supabaseClient
+        .from('registros')
+        .insert([{ nombre, apellido, celular, pokemon_id, codigo_registro, email }]);
 
       if (error) {
-        alert("❌ Error al eliminar registros cancelados.");
-        console.error(error);
+        console.error('❌ Error al registrar:', error.message);
+        mostrarMensaje('❌ Usuario ya esta registrado, ID de Pokémon ya existe.', false);
       } else {
-        alert("✅ Registros cancelados eliminados correctamente.");
-        cargarRegistros(paginaActual, filtroActual);
-      }
-    });
-
-    let paginaActual = 1;
-    const registrosPorPagina = 10;
-    let totalRegistros = 0;
-    let totalPaginas = 1;
-    let filtroActual = '';
-
-    function debounce(func, wait) {
-      let timeout;
-      return function(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-      };
-    }
-
-    filtroInput.addEventListener('input', debounce(() => {
-      cargarRegistros(1, filtroInput.value);
-    }, 300));
-
-    async function cargarRegistros(pagina = 1, filtroCodigo = '') {
-      contador.textContent = 'Cargando registros...';
-      tabla.innerHTML = '';
-      btnPrev.disabled = true;
-      btnNext.disabled = true;
-      paginaInfo.textContent = '';
-
-      filtroActual = filtroCodigo;
-      paginaActual = pagina;
-      const desde = (paginaActual - 1) * registrosPorPagina;
-
-      let countQuery = supabaseClient.from('registros').select('id', { count: 'exact', head: true });
-      if (filtroCodigo.trim() !== '') {
-        countQuery = countQuery.ilike('codigo_registro', `%${filtroCodigo.trim()}%`);
-      }
-
-      const { count, error: countError } = await countQuery;
-      if (countError) {
-        contador.textContent = '❌ Error al contar registros.';
-        console.error(countError);
-        return;
-      }
-
-      totalRegistros = count || 0;
-      totalPaginas = Math.ceil(totalRegistros / registrosPorPagina);
-
-      if (totalRegistros === 0) {
-        contador.textContent = 'No hay registros para mostrar.';
-        paginaInfo.textContent = '';
-        return;
-      }
-
-      let query = supabaseClient.from('registros').select('*').order('id', { ascending: false }).range(desde, desde + registrosPorPagina - 1);
-      if (filtroCodigo.trim() !== '') {
-        query = query.ilike('codigo_registro', `%${filtroCodigo.trim()}%`);
-      }
-
-      const { data, error } = await query;
-      if (error) {
-        contador.textContent = '❌ Error al cargar registros.';
-        console.error(error);
-        return;
-      }
-
-      contador.textContent = `Total de registros: ${totalRegistros}`;
-
-      data.forEach((item) => {
-        const fila = document.createElement('tr');
-
-        let fecha = 'Sin fecha';
-        if (item.fecha_registro) {
-          try {
-            const fechaIso = item.fecha_registro.replace(' ', 'T').replace(/(\.\d{3})\d*/, '$1') + 'Z';
-            const fechaObj = new Date(fechaIso);
-            if (!isNaN(fechaObj)) {
-              fecha = fechaObj.toLocaleString('es-CR', {
-                dateStyle: 'short',
-                timeStyle: 'short',
-              });
-            }
-          } catch (e) {
-            console.warn("Error procesando fecha:", item.fecha_registro, e);
-          }
-        }
-
-        fila.innerHTML = `
-          <td>${item.nombre}</td>
-          <td>${item.apellido}</td>
-<td>
-  <a href="https://wa.me/506${item.celular}" target="_blank" class="whatsapp-link">📞
-    ${item.celular}
-  </a>
-</td>
-          <td>${item.pokemon_id}</td>
-          <td>${item.email}</td>
-          <td>${item.codigo_registro}</td>
-          <td>${fecha}</td>
-          <td>
-            <select data-id="${item.id}" class="estado-select">
-              <option value="Pendiente" ${item.aprobado === "Pendiente" ? "selected" : ""}>⚠️ Pendiente</option>
-              <option value="Aprobado" ${item.aprobado === "Aprobado" ? "selected" : ""}>✅ Aprobado</option>
-              <option value="Cancelado" ${item.aprobado === "Cancelado" ? "selected" : ""}>❌ Cancelado</option>
-            </select>
-          </td>
-        `;
-
-        tabla.appendChild(fila);
-
-        const select = fila.querySelector(".estado-select");
-        select.addEventListener("change", async (e) => {
-          const nuevoEstado = e.target.value;
-          const idRegistro = e.target.getAttribute("data-id");
-
-          const { error: updateError } = await supabaseClient.from("registros").update({ aprobado: nuevoEstado }).eq("id", idRegistro);
-
-          if (updateError) {
-            alert("❌ Error al actualizar estado.");
-            console.error(updateError);
-          } else {
-            alert("✅ Estado actualizado correctamente.");
-          }
-        });
+	 
+	 // Enviar correo con EmailJS
+      emailjs.send("service_egbzrxs", "template_s9kbenk", {
+        nombre,
+        apellido,
+        codigo_registro,
+        email_to: email
+      }).then(() => {
+        console.log("📧 Correo enviado correctamente.");
+      }).catch((err) => {
+        console.error("❌ Error enviando correo:", err);
       });
-
-      paginaInfo.textContent = `Página ${paginaActual} de ${totalPaginas}`;
-      btnPrev.disabled = paginaActual <= 1;
-      btnNext.disabled = paginaActual >= totalPaginas;
-    }
-
-    btnPrev.addEventListener('click', () => {
-      if (paginaActual > 1) {
-        cargarRegistros(paginaActual - 1, filtroActual);
+	  
+	 
+        mostrarMensaje(`✅ ¡Registro exitoso! Tu código es: ${codigo_registro}`, true);
+        form.reset();
+        actualizarCupos();
+		
+		
       }
     });
 
-    btnNext.addEventListener('click', () => {
-      if (paginaActual < totalPaginas) {
-        cargarRegistros(paginaActual + 1, filtroActual);
-      }
-    });
+    // --- NUEVO: asignar left aleatorio al cargar ---
+    window.addEventListener('load', () => {
+      const pokemons = document.querySelectorAll('.pokemon-bg img');
+      const usedLefts = [];
 
-    cargarRegistros();
+      function getRandomLeft() {
+        // Devuelve un porcentaje entre 3% y 90%
+        return Math.floor(Math.random() * 87) + 3; 
+      }
+
+      pokemons.forEach((poke) => {
+        let leftPercent;
+        let tries = 0;
+        // Intentar evitar que los pokemons queden muy cerca horizontalmente
+        do {
+          leftPercent = getRandomLeft();
+          tries++;
+        } while (usedLefts.some(l => Math.abs(l - leftPercent) < 8) && tries < 20);
+
+        usedLefts.push(leftPercent);
+        poke.style.left = leftPercent + 'vw';
+      });
+    });
   </script>
 </body>
 </html>
